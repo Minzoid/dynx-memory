@@ -29,8 +29,8 @@ dependencies {
     // Logging API (no binding at compile-time)
     api "org.slf4j:slf4j-api:${project.slf4jVersion}"
 
-    // Logback as runtime logging implementation (test + consumers)
-    testRuntimeOnly "ch.qos.logback:logback-classic:${project.logbackVersion}"
+    // Logback as runtime logging implementation (bundled into shadow jar)
+    runtimeOnly "ch.qos.logback:logback-classic:${project.logbackVersion}"
 
     // JUnit 5
     testImplementation "org.junit.jupiter:junit-jupiter:${project.junitVersion}"
