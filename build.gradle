@@ -3,6 +3,7 @@ plugins {
     id 'maven-publish'
     id 'signing'
     id 'jacoco'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group = project.group
