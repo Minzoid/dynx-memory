@@ -1,0 +1,165 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'signing'
+    id 'jacoco'
+}
+
+group = project.group
+version = project.version
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(project.javaVersion.toInteger())
+    }
+    withJavadocJar()
+    withSourcesJar()
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // JNA — Windows native API access
+    api "net.java.dev.jna:jna:${project.jnaVersion}"
+    api "net.java.dev.jna:jna-platform:${project.jnaVersion}"
+
+    // Logging API (no binding at compile-time)
+    api "org.slf4j:slf4j-api:${project.slf4jVersion}"
+
+    // Logback as runtime logging implementation (test + consumers)
+    testRuntimeOnly "ch.qos.logback:logback-classic:${project.logbackVersion}"
+
+    // JUnit 5
+    testImplementation "org.junit.jupiter:junit-jupiter:${project.junitVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:${project.junitVersion}"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Test configuration
+// ─────────────────────────────────────────────────────────────────────────────
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        showStandardStreams = false
+        exceptionFormat = 'full'
+    }
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Javadoc
+// ─────────────────────────────────────────────────────────────────────────────
+javadoc {
+    options {
+        encoding = 'UTF-8'
+        charSet = 'UTF-8'
+        author = true
+        version = true
+        use = true
+        windowTitle = "DYNX Memory Java ${project.version} API"
+        docTitle = "DYNX Memory Java ${project.version}"
+        links 'https://docs.oracle.com/en/java/javase/21/docs/api/'
+        addStringOption('Xdoclint:none', '-quiet')
+    }
+    failOnError = false
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Compilation flags
+// ─────────────────────────────────────────────────────────────────────────────
+compileJava {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Maven Publishing (GitHub Packages + Maven Central via OSSRH)
+// ─────────────────────────────────────────────────────────────────────────────
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            groupId    = project.group
+            artifactId = 'dynx-memory'
+            version    = project.version
+
+            pom {
+                name        = 'DYNX Memory Java'
+                description = project.description
+                url         = 'https://github.com/dynx/dynx-memory'
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url  = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id    = 'dynx'
+                        name  = 'DYNX Team'
+                        email = 'contact@dynx.dev'
+                    }
+                }
+
+                scm {
+                    connection          = 'scm:git:git://github.com/dynx/dynx-memory.git'
+                    developerConnection = 'scm:git:ssh://github.com/dynx/dynx-memory.git'
+                    url                 = 'https://github.com/dynx/dynx-memory'
+                }
+            }
+        }
+    }
+
+    repositories {
+        // GitHub Packages
+        maven {
+            name = 'GitHubPackages'
+            url  = uri('https://maven.pkg.github.com/dynx/dynx-memory')
+            credentials {
+                username = System.getenv('GITHUB_ACTOR')  ?: project.findProperty('gpr.user')
+                password = System.getenv('GITHUB_TOKEN')  ?: project.findProperty('gpr.token')
+            }
+        }
+
+        // Maven Central via OSSRH
+        maven {
+            name = 'OSSRH'
+            url  = version.toString().endsWith('SNAPSHOT')
+                ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+                : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+            credentials {
+                username = System.getenv('OSSRH_USERNAME') ?: project.findProperty('ossrh.username')
+                password = System.getenv('OSSRH_PASSWORD') ?: project.findProperty('ossrh.password')
+            }
+        }
+    }
+}
+
+signing {
+    def signingKey      = System.getenv('GPG_SIGNING_KEY')      ?: project.findProperty('signing.key')
+    def signingPassword = System.getenv('GPG_SIGNING_PASSWORD') ?: project.findProperty('signing.password')
+    if (signingKey && signingPassword) {
+        useInMemoryPgpKeys(signingKey, signingPassword)
+        sign publishing.publications.mavenJava
+    }
+}
