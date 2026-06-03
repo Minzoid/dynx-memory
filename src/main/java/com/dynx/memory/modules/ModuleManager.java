@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version 1.0.0
  * @since 1.0.0
  */
-public final class ModuleManager {
+public class ModuleManager {
 
     private static final Logger log = LoggerFactory.getLogger(ModuleManager.class);
 

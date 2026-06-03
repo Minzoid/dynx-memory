@@ -104,7 +104,7 @@ publishing {
             pom {
                 name        = 'DYNX Memory Java'
                 description = project.description
-                url         = 'https://github.com/dynx/dynx-memory'
+                url         = 'https://github.com/Minzoid/dynx-memory'
 
                 licenses {
                     license {
@@ -122,9 +122,9 @@ publishing {
                 }
 
                 scm {
-                    connection          = 'scm:git:git://github.com/dynx/dynx-memory.git'
-                    developerConnection = 'scm:git:ssh://github.com/dynx/dynx-memory.git'
-                    url                 = 'https://github.com/dynx/dynx-memory'
+                    connection          = 'scm:git:git://github.com/Minzoid/dynx-memory.git'
+                    developerConnection = 'scm:git:ssh://github.com/Minzoid/dynx-memory.git'
+                    url                 = 'https://github.com/Minzoid/dynx-memory'
                 }
             }
         }
@@ -134,7 +134,7 @@ publishing {
         // GitHub Packages
         maven {
             name = 'GitHubPackages'
-            url  = uri('https://maven.pkg.github.com/dynx/dynx-memory')
+            url  = uri('https://maven.pkg.github.com/Minzoid/dynx-memory')
             credentials {
                 username = System.getenv('GITHUB_ACTOR')  ?: project.findProperty('gpr.user')
                 password = System.getenv('GITHUB_TOKEN')  ?: project.findProperty('gpr.token')

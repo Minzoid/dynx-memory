@@ -29,7 +29,7 @@ import com.dynx.memory.exceptions.MemoryWriteException;
  * @version 1.0.0
  * @since 1.0.0
  */
-public final class NativeMemoryIO {
+public class NativeMemoryIO {
 
     private static final Logger log = LoggerFactory.getLogger(NativeMemoryIO.class);
 
