@@ -6,7 +6,7 @@ import java.util.Objects;
  * Immutable value object representing a loaded module (DLL or EXE) within
  * a target Windows process.
  *
- * <p>Instances are obtained via {@link ModuleManager#getModule(String)} and
+ * <p>Instances are obtained via {@link ModuleManager#getModule} and
  * carry the module name, base load address, and size in bytes.
  *
  * <p>Thread-safe: yes (immutable).

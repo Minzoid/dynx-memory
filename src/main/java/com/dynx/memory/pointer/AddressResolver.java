@@ -183,6 +183,18 @@ public final class AddressResolver {
         long current = address;
 
         for (int i = startIndex; i < parts.length; i++) {
+            // Read pointer at current address before applying offset
+            log.debug("Chain step {}: reading pointer at 0x{}", i, Long.toHexString(current));
+            try {
+                final byte[] ptrBytes = memoryIO.readBytes(handle, current, 8);
+                current = ByteUtils.toLong(ptrBytes);
+                log.debug("Chain step {}: pointer value = 0x{}", i, Long.toHexString(current));
+            } catch (final Exception e) {
+                throw new InvalidAddressException(
+                        "Failed to dereference pointer at 0x" + Long.toHexString(current)
+                                + " (chain step " + i + ")", e);
+            }
+
             final String offsetStr = parts[i].trim();
             final long offset;
             try {
@@ -192,27 +204,8 @@ public final class AddressResolver {
                         "Invalid chain offset '" + offsetStr + "'", e);
             }
 
-            if (i < parts.length - 1) {
-                // Dereference: read pointer at current, then add next offset
-                final long ptrAddress = current + offset;
-                log.debug("Chain step {}: reading pointer at 0x{}", i, Long.toHexString(ptrAddress));
-                try {
-                    final byte[] ptrBytes = memoryIO.readBytes(handle, ptrAddress, 8);
-                    current = ByteUtils.toLong(ptrBytes);
-                    log.debug("Chain step {}: pointer value = 0x{}", i, Long.toHexString(current));
-                } catch (final Exception e) {
-                    throw new InvalidAddressException(
-                            "Failed to dereference pointer at 0x" + Long.toHexString(ptrAddress)
-                                    + " (chain step " + i + ")", e);
-                }
-            } else {
-                // Final offset — just add, do not dereference
-                current = current + offset;
-                log.debug("Chain final step: 0x{} + 0x{} = 0x{}",
-                        Long.toHexString(current - offset),
-                        Long.toHexString(offset),
-                        Long.toHexString(current));
-            }
+            current = current + offset;
+            log.debug("Chain step {}: added offset 0x{} -> 0x{}", i, Long.toHexString(offset), Long.toHexString(current));
         }
 
         return current;
