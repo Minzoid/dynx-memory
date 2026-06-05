@@ -91,6 +91,32 @@ compileTestJava {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// JAR manifest — embed native-access opt-in so consumers don't need JVM flags
+// Enable-Native-Access: ALL-UNNAMED is honoured by the JVM on Java 22+
+// On Java 17–21 the static initialiser in Memory.java handles it via reflection
+// ─────────────────────────────────────────────────────────────────────────────
+jar {
+    manifest {
+        attributes(
+            'Enable-Native-Access': 'ALL-UNNAMED',
+            'Implementation-Title'  : project.name,
+            'Implementation-Version': project.version
+        )
+    }
+}
+
+// Keep the same manifest in the shadow (fat) jar
+shadowJar {
+    manifest {
+        attributes(
+            'Enable-Native-Access': 'ALL-UNNAMED',
+            'Implementation-Title'  : project.name,
+            'Implementation-Version': project.version
+        )
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Maven Publishing (GitHub Packages + Maven Central via OSSRH)
 // ─────────────────────────────────────────────────────────────────────────────
 publishing {

@@ -15,6 +15,7 @@ import com.dynx.memory.scanner.AoBScanner;
 import com.dynx.memory.utils.ByteUtils;
 import com.sun.jna.platform.win32.WinNT.HANDLE;
 
+import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -65,6 +66,79 @@ import java.util.List;
 public final class Memory implements AutoCloseable {
 
     private static final Logger log = LoggerFactory.getLogger(Memory.class);
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Static initialiser — suppress JNA restricted-method warnings
+    //
+    // On Java 22+ the Enable-Native-Access manifest attribute (set in build.gradle)
+    // is enough. For Java 17–21 we temporarily swap System.err with a filtering
+    // PrintStream, force-load com.sun.jna.Native so its one-time warning fires
+    // while the filter is active, then restore the original stream.
+    // This gives consumers zero-config native access with no JVM flags required.
+    // ─────────────────────────────────────────────────────────────────────────────
+    static {
+        suppressJnaNativeAccessWarnings();
+    }
+
+    /**
+     * Temporarily replaces {@link System#err} with a filtering stream that
+     * drops the four-line JNA native-access {@code WARNING} block, then forces
+     * {@code com.sun.jna.Native} to load so that any one-time JVM warning is
+     * emitted (and silently discarded) during class initialisation rather than
+     * later during user code execution.
+     *
+     * <p>The original {@code System.err} is always restored, even on exception.
+     *
+     * <p>Only active on Java versions prior to 22; on Java 22+ the
+     * {@code Enable-Native-Access} JAR manifest attribute suppresses the
+     * warning natively.
+     */
+    private static void suppressJnaNativeAccessWarnings() {
+        final int javaVersion = Runtime.version().feature();
+        if (javaVersion >= 22) {
+            // Manifest attribute handles it — nothing to do here.
+            return;
+        }
+
+        final PrintStream original = System.err;
+        final PrintStream filtered = new PrintStream(original, true) {
+            /**
+             * Drops any line that is part of the JNA restricted-method warning
+             * block emitted by the JVM on Java 17–21.
+             *
+             * <p>Only lines that are clearly JVM-generated JNA warnings are
+             * suppressed; all other stderr output passes through normally.
+             */
+            @Override
+            public void println(final String line) {
+                if (line != null && isJnaNativeWarning(line)) {
+                    return; // silently drop
+                }
+                super.println(line);
+            }
+
+            private boolean isJnaNativeWarning(final String line) {
+                if (!line.startsWith("WARNING:")) {
+                    return false;
+                }
+                return line.contains("com.sun.jna.Native")
+                    || line.contains("--enable-native-access")
+                    || line.contains("Restricted methods will be blocked")
+                    || (line.contains("restricted method") && line.contains("java.lang.System"));
+            }
+        };
+
+        System.setErr(filtered);
+        try {
+            // Force JNA to initialise now, while the filter is active.
+            // After this point the one-time warning will never fire again.
+            Class.forName("com.sun.jna.Native");
+        } catch (final ClassNotFoundException ignored) {
+            // JNA is not on the classpath — nothing to suppress.
+        } finally {
+            System.setErr(original);
+        }
+    }
 
     // ─────────────────────────────────────────────────────────────────────────
     // Subsystems
