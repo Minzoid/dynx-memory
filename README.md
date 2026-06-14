@@ -1,9 +1,9 @@
-[![](https://jitpack.io/v/Minzoid/dynx-memory.svg)](https://jitpack.io/#Minzoid/dynx-memory)
+[![](https://jitpack.io/v/Minzoid/memory.svg)](https://jitpack.io/#Minzoid/memory)
 ![Platform](https://img.shields.io/badge/platform-windows-blue.svg)
 ![Java](https://img.shields.io/badge/Java-21%2B-orange.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-# DYNX Memory Java
+# Memory Java
 
 A high-performance, production-grade Java library for interacting with Windows process memory. Inspired by the popular `Memory.cs` library, it leverages **Java 21**, **JNA (Java Native Access)**, and **SOLID design principles** to provide a clean, developer-friendly API with zero native compilation dependencies.
 
@@ -62,7 +62,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.Minzoid:dynx-memory:1.0.0")
+    implementation("com.github.Minzoid:memory:1.0.0")
 }
 ```
 
@@ -74,7 +74,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.Minzoid:dynx-memory:1.0.0'
+    implementation 'com.github.Minzoid:memory:1.0.0'
 }
 ```
 
@@ -89,7 +89,7 @@ dependencies {
 
 <dependency>
     <groupId>com.github.Minzoid</groupId>
-    <artifactId>dynx-memory</artifactId>
+    <artifactId>memory</artifactId>
     <version>1.0.0</version>
 </dependency>
 ```
@@ -98,10 +98,10 @@ dependencies {
 
 ## Quick Start & Fluent API
 
-The entry point of the library is the `com.dynx.memory.Memory` class. It implements `AutoCloseable`, making it easy to manage process handles using a `try-with-resources` block.
+The entry point of the library is the `com.minzoid.memory.Memory` class. It implements `AutoCloseable`, making it easy to manage process handles using a `try-with-resources` block.
 
 ```java
-import com.dynx.memory.Memory;
+import com.minzoid.memory.Memory;
 
 public class Main {
     public static void main(String[] args) {
@@ -168,7 +168,7 @@ memory.writeFloat(address, 3.14f);
 memory.writeDouble(address, 2.71828);
 
 // Write a UTF-8 string
-memory.writeString(address, "DYNX Memory");
+memory.writeString(address, "Memory");
 
 // Write a raw byte array
 memory.writeBytes(address, new byte[] { 0x90, 0x90, 0x90 });
@@ -209,7 +209,7 @@ memory.writeInt(hpAddress, 9999);
 Target memory pages are often write-protected or execute-only. Trying to write to these pages directly will throw a `MemoryWriteException`. You must temporarily adjust the memory page protection flags using `VirtualProtectEx` through `MemoryProtection`.
 
 ```java
-import com.dynx.memory.protection.MemoryProtection;
+import com.minzoid.memory.protection.MemoryProtection;
 
 // Change protection of 4 bytes at target address to READ_WRITE
 MemoryProtection oldProtect = memory.changeProtection(address, 4, MemoryProtection.READ_WRITE);
@@ -251,8 +251,8 @@ if (!matches.isEmpty()) {
 To replace an AoB pattern (e.g. disabling an instruction by replacing it with `NOP` instructions (`0x90`)), follow this step-by-step code workflow:
 
 ```java
-import com.dynx.memory.Memory;
-import com.dynx.memory.protection.MemoryProtection;
+import com.minzoid.memory.Memory;
+import com.minzoid.memory.protection.MemoryProtection;
 import java.util.List;
 
 public class CodePatcher {
@@ -304,7 +304,7 @@ public class CodePatcher {
 
 ## Thread Safety & Internal Architecture
 
-DYNX Memory Java is designed for highly concurrent usage:
+Memory Java is designed for highly concurrent usage:
 - **Shared Resources**: Subsystems share a thread-safe `ReentrantReadWriteLock` to isolate read operations (e.g., reading/scanning memory, getting modules) and write operations (e.g., opening/closing processes).
 - **Module Caching**: Thread-safe caching via `ConcurrentHashMap` avoids excessive module enumeration calls to the Windows API.
 - **Parallel Scanning**: The `AoBScanner` uses a split-and-conquer ForkJoin framework. Large memory pages are divided into batches, processed concurrently, and matches are aggregated into a thread-safe `CopyOnWriteArrayList`.
@@ -315,7 +315,7 @@ DYNX Memory Java is designed for highly concurrent usage:
 
 On newer Java versions (Java 17+ and especially Java 22+), the JVM warns about or restricts restricted native methods (JNA load operations) unless the `--enable-native-access` command-line flag is passed.
 
-DYNX Memory Java bypasses this friction:
+Memory Java bypasses this friction:
 - For **Java 22+**, the project packages the `Enable-Native-Access: ALL-UNNAMED` attribute directly in the JAR manifest.
 - For **Java 17–21**, a custom static initializer utilizes a temporary stderr filtering stream to load JNA classes. This interceptor catches and discards the startup warnings silently, providing a **frictionless dependency** for your downstream library users.
 
@@ -347,3 +347,4 @@ We use JaCoCo for code coverage. Run tests first, then view the report:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+

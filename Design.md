@@ -1,4 +1,4 @@
-# DYNX Memory Java - Design Document
+# Memory Java - Design Document
 
 ## Architecture
 
@@ -18,7 +18,7 @@ The project follows a layered architecture.
 
 ## Package Structure
 
-com.dynx.memory
+com.minzoid.memory
 
 ├── Memory
 ├── process
@@ -189,3 +189,4 @@ Levels:
 * WARN
 * ERROR
 * DEBUG
+

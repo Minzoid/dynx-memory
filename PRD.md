@@ -1,8 +1,8 @@
-# DYNX Memory Java - Product Requirements Document (PRD)
+# Memory Java - Product Requirements Document (PRD)
 
 ## Project Overview
 
-DYNX Memory Java is a Java-based Windows process memory library inspired by the existing Memory.cs implementation. The library will provide process memory interaction capabilities through a clean Java API while supporting both 32-bit and 64-bit processes.
+Memory Java is a Java-based Windows process memory library inspired by the existing Memory.cs implementation. The library will provide process memory interaction capabilities through a clean Java API while supporting both 32-bit and 64-bit processes.
 
 The goal is to create a reusable package that developers can integrate into their own Java projects.
 
@@ -134,3 +134,4 @@ Support formats:
 * Plugin system
 * Memory snapshots
 * Differential memory analysis
+

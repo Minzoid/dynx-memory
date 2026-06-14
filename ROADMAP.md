@@ -1,4 +1,4 @@
-# DYNX Memory Java - Roadmap
+# Memory Java - Roadmap
 
 ## Vision
 
@@ -171,3 +171,4 @@ A? ?? 00
 * Memory diffing
 * Plugin architecture
 * Scan profiles
+

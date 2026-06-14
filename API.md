@@ -1,4 +1,4 @@
-# DYNX Memory Java - Public API Specification
+# Memory Java - Public API Specification
 
 ## Creating Memory Instance
 
@@ -206,3 +206,4 @@ memory.snapshot();
 memory.diff(snapshotA,
 snapshotB);
 ```
+

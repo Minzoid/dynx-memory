@@ -70,8 +70,8 @@ javadoc {
         author = true
         version = true
         use = true
-        windowTitle = "DYNX Memory Java ${project.version} API"
-        docTitle = "DYNX Memory Java ${project.version}"
+        windowTitle = "Memory Java ${project.version} API"
+        docTitle = "Memory Java ${project.version}"
         links 'https://docs.oracle.com/en/java/javase/21/docs/api/'
         addStringOption('Xdoclint:none', '-quiet')
     }
@@ -125,13 +125,13 @@ publishing {
             from components.java
 
             groupId    = project.group
-            artifactId = 'dynx-memory'
+            artifactId = 'memory'
             version    = project.version
 
             pom {
-                name        = 'DYNX Memory Java'
+                name        = 'Memory Java'
                 description = project.description
-                url         = 'https://github.com/Minzoid/dynx-memory'
+                url         = 'https://github.com/Minzoid/memory'
 
                 licenses {
                     license {
@@ -142,16 +142,16 @@ publishing {
 
                 developers {
                     developer {
-                        id    = 'dynx'
-                        name  = 'DYNX Team'
-                        email = 'contact@dynx.dev'
+                        id    = 'minzoid'
+                        name  = 'Minzoid'
+                        email = 'mikahosina@gmail.com'
                     }
                 }
 
                 scm {
-                    connection          = 'scm:git:git://github.com/Minzoid/dynx-memory.git'
-                    developerConnection = 'scm:git:ssh://github.com/Minzoid/dynx-memory.git'
-                    url                 = 'https://github.com/Minzoid/dynx-memory'
+                    connection          = 'scm:git:git://github.com/Minzoid/memory.git'
+                    developerConnection = 'scm:git:ssh://github.com/Minzoid/memory.git'
+                    url                 = 'https://github.com/Minzoid/memory'
                 }
             }
         }
@@ -161,7 +161,7 @@ publishing {
         // GitHub Packages
         maven {
             name = 'GitHubPackages'
-            url  = uri('https://maven.pkg.github.com/Minzoid/dynx-memory')
+            url  = uri('https://maven.pkg.github.com/Minzoid/memory')
             credentials {
                 username = System.getenv('GITHUB_ACTOR')  ?: project.findProperty('gpr.user')
                 password = System.getenv('GITHUB_TOKEN')  ?: project.findProperty('gpr.token')

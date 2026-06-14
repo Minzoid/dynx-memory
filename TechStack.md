@@ -1,4 +1,4 @@
-# DYNX Memory Java - Technology Stack
+# Memory Java - Technology Stack
 
 ## Programming Language
 
@@ -171,3 +171,4 @@ Memory:
 Storage:
 
 * 50 MB
+
